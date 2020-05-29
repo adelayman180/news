@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:date_format/date_format.dart';
+import 'package:theme_provider/theme_provider.dart';
 import './drawer.dart';
 import './details_page.dart';
 import './home_page.dart';
@@ -8,13 +9,12 @@ import './get_data_page.dart';
 class ResultPage extends StatelessWidget {
   final data;
   final int catog;
-  final bool isDark;
-  ResultPage(this.catog, this.isDark, this.data);
+
+  ResultPage(this.catog, this.data);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      endDrawer: MyDrawer(isDark),
-      backgroundColor: isDark ? null : Color(0xffdddddd),
+      endDrawer: MyDrawer(),
       appBar: AppBar(
         centerTitle: true,
         title: Text(
@@ -38,7 +38,7 @@ class ResultPage extends StatelessWidget {
                         for (int numOfData = (data['totalResults'] / 20).ceil();
                             numOfData > 0;
                             numOfData--)
-                          RowPagesItem(catog, isDark, numOfData),
+                          RowPagesItem(catog, numOfData),
                       ],
                     ),
                   ),
@@ -47,36 +47,36 @@ class ResultPage extends StatelessWidget {
             : InkWell(
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (_) => DetailsPage(
-                        isDark,
-                        data['articles'][i]['source']['name'],
-                        formatDate(
-                            DateTime.parse(
-                                    '${data['articles'][i]['publishedAt']}')
-                                .add(Duration(hours: 2)),
-                            [
-                              yyyy,
-                              '/',
-                              m,
-                              '/',
-                              d,
-                              '  ',
-                              h,
-                              ':',
-                              nn,
-                              '  ',
-                              am
-                            ]).toString(),
-                        data['articles'][i]['description'],
-                        data['articles'][i]['url'],
-                        data['articles'][i]['urlToImage']),
+                    builder: (_) => ThemeConsumer(
+                      child: DetailsPage(
+                          data['articles'][i]['source']['name'],
+                          formatDate(
+                              DateTime.parse(
+                                      '${data['articles'][i]['publishedAt']}')
+                                  .add(Duration(hours: 2)),
+                              [
+                                yyyy,
+                                '/',
+                                m,
+                                '/',
+                                d,
+                                '  ',
+                                h,
+                                ':',
+                                nn,
+                                '  ',
+                                am
+                              ]).toString(),
+                          data['articles'][i]['description'],
+                          data['articles'][i]['url'],
+                          data['articles'][i]['urlToImage']),
+                    ),
                   ),
                 ),
                 child: Card(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25),
                   ),
-                  color: isDark ? null : Color(0x7777ff77),
                   margin: const EdgeInsets.symmetric(vertical: 6),
                   child: Column(
                     children: <Widget>[
@@ -160,9 +160,9 @@ class ResultPage extends StatelessWidget {
 }
 
 class RowPagesItem extends StatelessWidget {
-  RowPagesItem(this.catog, this.isDark, this.text);
+  RowPagesItem(this.catog, this.text);
   final int text;
-  final bool isDark;
+
   final int catog;
   @override
   Widget build(BuildContext context) {
@@ -172,10 +172,10 @@ class RowPagesItem extends StatelessWidget {
       width: 50,
       child: RaisedButton(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-        color: isDark ? ThemeData.dark().cardColor : Color(0xaaaaffaa),
         onPressed: () => Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-                builder: (_) => GetDataPage(catog, isDark, text))),
+                builder: (_) =>
+                    ThemeConsumer(child: GetDataPage(catog, text)))),
         child: Text(text.toString()),
       ),
     );

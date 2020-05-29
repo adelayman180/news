@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:theme_provider/theme_provider.dart';
 import './home_page.dart';
 import './get_data_page.dart';
-import './loading_page.dart';
 
-class MyDrawer extends StatefulWidget {
-  final bool isDark;
-  MyDrawer(this.isDark);
-  @override
-  _MyDrawerState createState() => _MyDrawerState();
-}
-
-class _MyDrawerState extends State<MyDrawer> {
+class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    bool isDark = ThemeProvider.themeOf(context).id == 'light' ? false : true;
     return Drawer(
       child: SafeArea(
         child: ListView.builder(
@@ -29,51 +22,9 @@ class _MyDrawerState extends State<MyDrawer> {
                       textAlign: TextAlign.right,
                     ),
                     leading: Switch(
-                        value: widget.isDark,
-                        onChanged: (val) async {
-                          showDialog(
-                              context: context,
-                              builder: (ctx) => AlertDialog(
-                                    title: Text(
-                                      'الوضع المظلم',
-                                      textAlign: TextAlign.right,
-                                      style: TextStyle(
-                                          fontFamily: 'Jomhuria', fontSize: 25),
-                                    ),
-                                    content: Text(
-                                      'يجب إعادة تشغيل البرنامج لكي يظهر التغير',
-                                      style: TextStyle(fontFamily: 'Tajawal'),
-                                      textAlign: TextAlign.right,
-                                    ),
-                                    actions: <Widget>[
-                                      FlatButton(
-                                        onPressed: () async {
-                                          Navigator.pop(ctx);
-                                          SharedPreferences pref =
-                                              await SharedPreferences
-                                                  .getInstance();
-                                          pref.setBool('isDark', val);
-                                        },
-                                        child: Text('لاحقاً'),
-                                      ),
-                                      FlatButton(
-                                        onPressed: () async {
-                                          Navigator.pop(ctx);
-                                          SharedPreferences pref =
-                                              await SharedPreferences
-                                                  .getInstance();
-                                          pref.setBool('isDark', val);
-                                          Navigator.pushReplacement(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      LoadingPage()));
-                                        },
-                                        child: Text('الأن'),
-                                      ),
-                                    ],
-                                  ));
-                        }),
+                        value: isDark,
+                        onChanged: (_) =>
+                            ThemeProvider.controllerOf(context).nextTheme()),
                   )
                 : Column(
                     children: <Widget>[
@@ -81,10 +32,17 @@ class _MyDrawerState extends State<MyDrawer> {
                         height: 10,
                       ),
                       ListTile(
-                        onTap: () => Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                                builder: (_) =>
-                                    GetDataPage(i - 1, widget.isDark, 1))),
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          Navigator.of(context).canPop()
+                              ? Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (_) => ThemeConsumer(
+                                          child: GetDataPage(i - 1, 1))))
+                              : Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (_) => ThemeConsumer(
+                                      child: GetDataPage(i - 1, 1))));
+                        },
                         trailing: FaIcon(
                           icons[i - 1],
                         ),

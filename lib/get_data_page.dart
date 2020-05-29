@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:theme_provider/theme_provider.dart';
 import './home_page.dart';
 import 'dart:convert';
 import './result_page.dart';
@@ -7,8 +8,8 @@ import './result_page.dart';
 class GetDataPage extends StatefulWidget {
   final int pageNum;
   final int catog;
-  final bool isDark;
-  GetDataPage(this.catog, this.isDark, this.pageNum);
+
+  GetDataPage(this.catog, this.pageNum);
   @override
   _GetDataPageState createState() => _GetDataPageState();
 }
@@ -27,13 +28,13 @@ class _GetDataPageState extends State<GetDataPage> {
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
       Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (_) => ResultPage(widget.catog, widget.isDark, data)));
-    } else {}
+          builder: (_) =>
+              ThemeConsumer(child: ResultPage(widget.catog, data))));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        color: Colors.white, child: Center(child: CircularProgressIndicator()));
+    return Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }

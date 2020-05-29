@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import './home_page.dart';
+import 'package:theme_provider/theme_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GuidePage extends StatefulWidget {
@@ -60,7 +61,8 @@ class _GuidePageState extends State<GuidePage> {
                           Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (_) => HomePage(false)));
+                                  builder: (_) =>
+                                      ThemeConsumer(child: HomePage())));
                         },
                         padding:
                             EdgeInsets.symmetric(vertical: 4, horizontal: 50),

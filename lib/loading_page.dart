@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import './guide_page.dart';
 import './home_page.dart';
+import 'package:theme_provider/theme_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoadingPage extends StatefulWidget {
@@ -18,15 +19,28 @@ class _LoadingPageState extends State<LoadingPage> {
   load() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     bool firstOpen = pref.getBool('firstOpen') ?? true;
-    bool isDark = pref.getBool('isDark') ?? false;
+
     Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (_) => MaterialApp(
-              home: firstOpen ? GuidePage() : HomePage(isDark),
-              theme: isDark
-                  ? ThemeData.dark()
-                  : ThemeData(
+        builder: (_) => ThemeProvider(
+              loadThemeOnInit: true,
+              saveThemesOnChange: true,
+              themes: [
+                AppTheme(
+                    id: 'light',
+                    data: ThemeData(
                       primaryColor: Colors.green.shade900,
-                      accentColor: Colors.green.shade900),
+                      accentColor: Colors.green.shade900,
+                      cardColor: Colors.green,
+                    ),
+                    description: 'light'),
+                AppTheme(
+                    id: 'dark', data: ThemeData.dark(), description: 'light')
+              ],
+              defaultThemeId: 'light',
+              child: MaterialApp(
+                home:
+                    firstOpen ? GuidePage() : ThemeConsumer(child: HomePage()),
+              ),
             )));
   }
 

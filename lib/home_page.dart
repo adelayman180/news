@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:theme_provider/theme_provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import './get_data_page.dart';
 import './drawer.dart';
@@ -33,9 +34,6 @@ const List<IconData> icons = [
 ];
 
 class HomePage extends StatelessWidget {
-  final bool isDark;
-  HomePage(this.isDark);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,17 +44,16 @@ class HomePage extends StatelessWidget {
           style: TextStyle(fontFamily: 'Jomhuria', fontSize: 30),
         ),
       ),
-      endDrawer: MyDrawer(isDark),
+      endDrawer: MyDrawer(),
       body: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
         itemCount: 7,
         itemBuilder: (_, i) => Card(
           elevation: 5,
-          color: isDark ? null : Color(0x7777ff77),
           child: ListTile(
             onTap: () {
-              Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => GetDataPage(i, isDark, 1)));
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => ThemeConsumer(child: GetDataPage(i, 1))));
             },
             trailing: FaIcon(
               icons[i],
